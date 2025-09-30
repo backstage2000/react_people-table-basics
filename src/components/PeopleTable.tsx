@@ -1,42 +1,22 @@
-import { useEffect, useState } from 'react';
 import { Loader } from './Loader';
 
-import { getPeople } from '../api';
-import { Person } from '../types';
-import { Link, useParams } from 'react-router-dom';
 import cn from 'classnames';
+import { Person } from '../types';
+import { PersonLink } from './PersonLink';
 
-export const PeopTable = () => {
-  const [people, setPeople] = useState<Person[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
+type Props = {
+  people: Person[];
+  isLoading: boolean;
+  selectedSlug: string;
+  isError: boolean;
+};
 
-  const { slug } = useParams();
-
-  function getSlug(name: string, born: number): string {
-    return `${name.toLowerCase().replace(/\s+/g, '-')}-${born}`;
-  }
-
-  useEffect(() => {
-    setIsLoading(true);
-    setIsError(false);
-
-    const fetchPeople = async () => {
-      try {
-        const result = await getPeople();
-
-        setPeople(result);
-        setIsLoading(false);
-      } catch (error) {
-        setIsLoading(false);
-        setIsError(true);
-        throw error;
-      }
-    };
-
-    fetchPeople();
-  }, []);
-
+export const PeopleTable: React.FC<Props> = ({
+  people,
+  isLoading,
+  selectedSlug,
+  isError,
+}) => {
   return (
     <div className="box table-container">
       {isLoading && <Loader />}
@@ -60,54 +40,37 @@ export const PeopTable = () => {
           <tbody>
             {people?.map(person => {
               const mother = people.find(p => p.name === person.motherName);
-              const motherSlug = mother
-                ? getSlug(mother.name, mother.born)
-                : null;
-
               const father = people.find(p => p.name === person.fatherName);
-              const fatherSlug = father
-                ? getSlug(father.name, father.born)
-                : null;
 
               return (
                 <tr
                   className={cn('', {
-                    'has-background-warning': slug === person.slug,
+                    'has-background-warning': selectedSlug === person.slug,
                   })}
                   key={person.slug}
                   data-cy="person"
                 >
                   <td>
-                    <Link
-                      className={cn('', {
-                        'has-text-danger': person.sex === 'f',
-                      })}
-                      to={`/people/${person.slug}`}
-                    >
-                      {person.name}
-                    </Link>
+                    <PersonLink person={person} />
                   </td>
 
                   <td>{person.sex}</td>
                   <td>{person.born}</td>
                   <td>{person.died}</td>
                   <td>
-                    {motherSlug ? (
-                      <Link
-                        className="has-text-danger"
-                        to={`/people/${motherSlug}`}
-                      >
+                    {mother ? (
+                      <PersonLink person={mother}>
                         {person.motherName}
-                      </Link>
+                      </PersonLink>
                     ) : (
                       person.motherName || '-'
                     )}
                   </td>
                   <td>
-                    {motherSlug ? (
-                      <Link to={`/people/${fatherSlug}`}>
+                    {father ? (
+                      <PersonLink person={father}>
                         {person.fatherName}
-                      </Link>
+                      </PersonLink>
                     ) : (
                       person.fatherName || '-'
                     )}

@@ -25,7 +25,11 @@ export const PeoplePage = () => {
       } catch (error) {
         setIsLoading(false);
         setIsError(true);
-        throw error;
+
+        // eslint-disable-next-line no-console
+        console.error(error);
+      } finally {
+        setIsLoading(false);
       }
     };
 

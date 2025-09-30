@@ -1,38 +1,52 @@
-import { Loader } from './components/Loader';
+// import { Loader } from './components/Loader';
+import cn from 'classnames';
 
 import './App.scss';
+import { Outlet, useLocation, Link } from 'react-router-dom';
 
-export const App = () => (
-  <div data-cy="app">
-    <nav
-      data-cy="nav"
-      className="navbar is-fixed-top has-shadow"
-      role="navigation"
-      aria-label="main navigation"
-    >
-      <div className="container">
-        <div className="navbar-brand">
-          <a className="navbar-item" href="#/">
-            Home
-          </a>
+export const App = () => {
+  const location = useLocation();
 
-          <a
-            className="navbar-item has-background-grey-lighter"
-            href="#/people"
-          >
-            People
-          </a>
+  return (
+    <div data-cy="app">
+      <nav
+        data-cy="nav"
+        className="navbar is-fixed-top has-shadow"
+        role="navigation"
+        aria-label="main navigation"
+      >
+        <div className="container">
+          <div className="navbar-brand">
+            <Link
+              className={cn('navbar-item', {
+                'has-background-grey-lighter': location.pathname === '/',
+              })}
+              to="/"
+            >
+              Home
+            </Link>
+
+            <Link
+              className={cn('navbar-item', {
+                'has-background-grey-lighter':
+                  location.pathname.startsWith('/people'),
+              })}
+              to="/people"
+            >
+              People
+            </Link>
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
 
-    <main className="section">
-      <div className="container">
-        <h1 className="title">Home Page</h1>
+      <main className="section">
+        <div className="container">
+          <Outlet />
+          {/* <h1 className="title">Home Page</h1>
         <h1 className="title">People Page</h1>
-        <h1 className="title">Page not found</h1>
+        <h1 className="title">Page not found</h1> */}
 
-        <div className="block">
+          {/* <div className="block">
           <div className="box table-container">
             <Loader />
 
@@ -40,7 +54,7 @@ export const App = () => (
               Something went wrong
             </p>
 
-            <p data-cy="noPeopleMessage">There are no people on the server</p>
+            <p data-cy="noPeopleMessage">There are no people on the server</p>p data-cy="noPeopleMessage">There are no people on the server</p>
 
             <table
               data-cy="peopleTable"
@@ -160,8 +174,9 @@ export const App = () => (
               </tbody>
             </table>
           </div>
+        </div> */}
         </div>
-      </div>
-    </main>
-  </div>
-);
+      </main>
+    </div>
+  );
+};
